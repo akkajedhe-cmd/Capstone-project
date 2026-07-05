@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LifeBridge India AI - Emergency Response & Disaster Assistant</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <!-- Tricolor Top Accent Bar -->
+    <div class="app-tricolor-bar"></div>
+
+    <!-- Strobe Flashlight Simulation Overlay -->
+    <div id="strobeOverlay" class="strobe-overlay"></div>
+
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div>
+                <div class="brand">
+                    <div class="brand-icon">L</div>
+                    <span class="brand-name" data-translate="brand-name">LifeBridge India</span>
+                </div>
+
+                <!-- SLEEK BILINGUAL LANGUAGE SELECTOR -->
+                <div class="lang-selector">
+                    <button class="lang-btn active" id="langEn">EN</button>
+                    <button class="lang-btn" id="langHi">हिन्दी</button>
+                </div>
+
+                <ul class="nav-links">
+                    <li><a class="nav-item active" data-view="dashboard"><span class="nav-icon">📊</span> <span
+                                data-translate="nav-dashboard">Dashboard</span></a></li>
+                    <li><a class="nav-item" data-view="sos"><span class="nav-icon">🚨</span> <span
+                                data-translate="nav-sos">SOS Central</span></a></li>
+                    <li><a class="nav-item" data-view="shelters"><span class="nav-icon">🏠</span> <span
+                                data-translate="nav-shelters">Shelters</span></a></li>
+                    <li><a class="nav-item" data-view="roads"><span class="nav-icon">🚧</span> <span
+                                data-translate="nav-roads">Safe Roads</span></a></li>
+                    <li><a class="nav-item" data-view="family"><span class="nav-icon">👥</span> <span
+                                data-translate="nav-family">Family Safety</span></a></li>
+                    <li><a class="nav-item" data-view="medical"><span class="nav-icon">🏥</span> <span
+                                data-translate="nav-medical">Medical Help</span></a></li>
+                    <li><a class="nav-item" data-view="supplies"><span class="nav-icon">📦</span> <span
+                                data-translate="nav-supplies">Supply Requests</span></a></li>
+                    <li><a class="nav-item" data-view="chatbot"><span class="nav-icon">💬</span> <span
+                                data-translate="nav-chatbot">AI Assistant</span></a></li>
+                </ul>
+            </div>
+            <div class="sidebar-footer">
+                <div class="offline-badge">
+                    <div class="offline-dot"></div>
+                    <span data-translate="offline-mode">Locally Cached Mode</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Workspace -->
+        <main class="main-content">
+            <!-- Alert Banner (Always Visible if active) -->
+            <div id="globalAlert" class="alert-banner">
+                <div class="alert-info">
+                    <span class="alert-badge" data-translate="alert-badge">Alert</span>
+                    <span id="globalAlertMessage" class="alert-message" data-translate="alert-normal">System Normal.
+                        Select a disaster simulation inside the dashboard to test responsiveness.</span>
+                </div>
+            </div>
+
+            <!-- VIEW: Dashboard -->
+            <section id="dashboard" class="view-section active">
+                <div class="section-header">
+                    <div>
+                        <h1 class="section-title" data-translate="dashboard-title">Emergency Dashboard</h1>
+                        <p class="section-subtitle" data-translate="dashboard-subtitle">Real-time situational
+                            intelligence and disaster coordination.</p>
+                    </div>
+                </div>
+
+                <!-- Stats Grid -->
+                <div class="stat-grid">
+                    <div class="glass-card stat-card tricolor-card">
+                        <div class="stat-header">
+                            <span data-translate="stat-alerts-title">Active Disaster Alerts</span>
+                            <div class="stat-icon-wrapper"
+                                style="background: rgba(239,68,68,0.1); color: var(--color-danger)">🚨</div>
+                        </div>
+                        <div class="stat-value" id="statAlerts">0</div>
+                        <div class="stat-footer" style="color: var(--color-danger)" id="statAlertsLabel"
+                            data-translate="stat-alerts-no">No active threats</div>
+                    </div>
+                    <div class="glass-card stat-card tricolor-card">
+                        <div class="stat-header">
+                            <span data-translate="stat-shelters-title">Available Shelters</span>
+                            <div class="stat-icon-wrapper"
+                                style="background: rgba(16,185,129,0.1); color: var(--color-success)">🏠</div>
+                        </div>
+                        <div class="stat-value" id="statShelters">6 / 6</div>
+                        <div class="stat-footer" style="color: var(--color-success)"
+                            data-translate="stat-shelters-desc">All open & operating</div>
+                    </div>
+                    <div class="glass-card stat-card tricolor-card">
+                        <div class="stat-header">
+                            <span data-translate="stat-roads-title">Blocked Roads</span>
+                            <div class="stat-icon-wrapper"
+                                style="background: rgba(245,158,11,0.1); color: var(--color-warning)">🚧</div>
+                        </div>
+                        <div class="stat-value" id="statRoadblocks">1</div>
+                        <div class="stat-footer" style="color: var(--color-warning)" id="statRoadblocksLabel"
+                            data-translate="stat-roads-desc">Flooding or debris hazards</div>
+                    </div>
+                    <div class="glass-card stat-card tricolor-card">
+                        <div class="stat-header">
+                            <span data-translate="stat-checkins-title">Family Check-ins</span>
+                            <div class="stat-icon-wrapper"
+                                style="background: rgba(59,130,246,0.1); color: var(--color-info)">👥</div>
+                        </div>
+                        <div class="stat-value" id="statCheckins">3</div>
+                        <div class="stat-footer" style="color: var(--color-info)" data-translate="stat-checkins-desc">
+                            Members logged safe</div>
+                    </div>
+                </div>
+
+                <!-- Main dashboard visualization and controls -->
+                <div class="grid-main">
+                    <!-- Shelter & Route Map overlay -->
+                    <div class="glass-card" style="display: flex; flex-direction: column; gap: 16px;">
+                        <h3 style="font-family: 'Outfit', sans-serif;" data-translate="map-title">Interactive Regional
+                            Disaster Map</h3>
+                        <div class="map-canvas-container" id="mapContainer">
+                            <div class="map-grid-overlay"></div>
+                            <!-- Canvas elements will be rendered dynamically by JavaScript -->
+                        </div>
+                        <div
+                            style="display: flex; gap: 20px; font-size: 13px; color: var(--text-secondary); align-items: center; flex-wrap: wrap;">
+                            <div style="display: flex; align-items: center; gap: 6px;"><span
+                                    style="width: 10px; height: 10px; border-radius:50%; background-color: var(--color-success)"></span>
+                                <span data-translate="legend-shelter">Shelter</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 6px;"><span
+                                    style="width: 10px; height: 10px; border-radius:50%; background-color: var(--color-info)"></span>
+                                <span data-translate="legend-hospital">Hospital</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 6px;"><span
+                                    style="width: 10px; height: 10px; border-radius:50%; background-color: var(--color-danger)"></span>
+                                <span data-translate="legend-hazard">Incident/Hazard</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 6px;"><span
+                                    style="width: 10px; height: 2px; background-color: var(--color-danger)"></span>
+                                <span data-translate="legend-blocked">Blocked Road</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 6px;"><span
+                                    style="width: 10px; height: 2px; background-color: var(--color-success)"></span>
+                                <span data-translate="legend-safe">Safe Road</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Disaster Sandbox and feed -->
+                    <div style="display: flex; flex-direction: column; gap: 24px;">
+                        <!-- Sandbox Controller -->
+                        <div class="glass-card">
+                            <h3 style="font-family: 'Outfit', sans-serif; margin-bottom: 12px;"
+                                data-translate="sandbox-title">Disaster Simulation Sandbox</h3>
+                            <p style="font-size: 12px; color: var(--text-secondary); margin-bottom: 16px;"
+                                data-translate="sandbox-desc">
+                                Select a mock scenario to simulate how LifeBridge AI dynamically routes data, flags road
+                                conditions, and adjusts shelter capacities.
+                            </p>
+                            <div class="sandbox-controls">
+                                <button class="sandbox-btn" id="btnSimNone" data-scenario="none">
+                                    <span style="font-size: 20px;">🛡️</span>
+                                    <span data-translate="sim-normal">Normal Status</span>
+                                </button>
+                                <button class="sandbox-btn" id="btnSimFlood" data-scenario="flood">
+                                    <span style="font-size: 20px;">🌊</span>
+                                    <span data-translate="sim-flood">Mumbai Monsoon</span>
+                                </button>
+                                <button class="sandbox-btn" id="btnSimQuake" data-scenario="quake">
+                                    <span style="font-size: 20px;">🫨</span>
+                                    <span data-translate="sim-quake">Himalayan Quake</span>
+                                </button>
+                                <button class="sandbox-btn" id="btnSimCyclone" data-scenario="cyclone">
+                                    <span style="font-size: 20px;">🌀</span>
+                                    <span data-translate="sim-cyclone">Odisha Cyclone</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Live Incident Logs -->
+                        <div class="glass-card" style="flex-grow: 1;">
+                            <h3 style="font-family: 'Outfit', sans-serif; margin-bottom: 12px;"
+                                data-translate="live-broadcast-title">Live Broadcast Updates</h3>
+                            <div class="card-list" id="dashboardLogs" style="max-height: 180px;">
+                                <!-- Dynamically populated list -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- VIEW: SOS Central -->
+            <section id="sos" class="view-section">
+                <div class="section-header">
+                    <div>
+                        <h1 class="section-title" data-translate="sos-title">SOS Distress Center</h1>
+                        <p class="section-subtitle" data-translate="sos-subtitle">Attract attention, broadcast your
+                            coordinates, and contact dispatchers.</p>
+                    </div>
+                </div>
+
+                <div class="grid-2">
+                    <!-- SOS Trigger Panel -->
+                    <div class="glass-card sos-panel tricolor-card">
+                        <h2 style="font-family: 'Outfit', sans-serif;" data-translate="sos-panel-title">EMERGENCY SOS
+                        </h2>
+                        <p style="font-size: 14px; color: var(--text-secondary);" data-translate="sos-panel-desc">
+                            Press and hold the button for 3 seconds to trigger a mock emergency broadcast. This will
+                            fetch GPS, start alerts, and notify local services.
+                        </p>
+
+                        <div class="sos-button-wrapper">
+                            <div class="sos-outer-ring" id="sosOuter"></div>
+                            <div class="sos-inner-ring" id="sosInner"></div>
+                            <button class="sos-btn" id="sosBtn">SOS</button>
+                            <button id="sosBtn">SOS</button>
+                            <p id="sosStatus">Status: Idle</p>
+                        </div>
+
+                        <div class="sos-gps" id="sosGPS" style="display: none;">Latitude: --.------ | Longitude:
+                            --.------</div>
+
+                        <div class="distress-controls">
+                            <button class="distress-btn" id="sirenBtn" data-translate="btn-siren">🔊 Sound Distress
+                                Siren</button>
+                            <button class="distress-btn" id="strobeBtn" data-translate="btn-strobe">🔦 Strobe
+                                Flashlight</button>
+                        </div>
+                    </div>
+
+                    <!-- Action and Hotline Directory -->
+                    <div style="display: flex; flex-direction: column; gap: 24px;">
+                        <div class="glass-card">
+                            <h3 style="font-family: 'Outfit', sans-serif; margin-bottom: 16px;"
+                                data-translate="directory-title">National Emergency Hotline Directory</h3>
+                            <div class="card-list" style="max-height: 420px;">
+                                <div class="list-item">
+                                    <div>
+                                        <h4 style="font-weight: 600;" data-translate="hotline-erss-title">National
+                                            Emergency Number (ERSS)</h4>
+                                        <p style="font-size: 12px; color: var(--text-secondary);"
+                                            data-translate="hotline-erss-desc">All-in-one emergency response service</p>
+                                    </div>
+                                    <span class="item-badge badge-danger">112</span>
+                                </div>
+                                <div class="list-item">
+                                    <div>
+                                        <h4 style="font-weight: 600;" data-translate="hotline-ndma-title">Disaster
+                                            Management (NDMA)</h4>
+                                        <p style="font-size: 12px; color: var(--text-secondary);"
+                                            data-translate="hotline-ndma-desc">National Disaster Management Authority
+                                        </p>
+                                    </div>
+                                    <span class="item-badge badge-danger">1078</span>
+                                </div>
+                                <div class="list-item">
+                                    <div>
+                                        <h4 style="font-weight: 600;" data-translate="hotline-ndrf-title">NDRF Emergency
+                                            Helpline</h4>
+                                        <p style="font-size: 12px; color: var(--text-secondary);"
+                                            data-translate="hotline-ndrf-desc">National Disaster Response Force</p>
+                                    </div>
+                                    <span class="item-badge badge-danger">9711077372</span>
+                                </div>
+                                <div class="list-item">
+                                    <div>
+                                        <h4 style="font-weight: 600;" data-translate="hotline-med-title">Ambulance &
+                                            Medical Aid</h4>
+                                        <p style="font-size: 12px; color: var(--text-secondary);"
+                                            data-translate="hotline-med-desc">Medical triage and local transport</p>
+                                    </div>
+                                    <span class="item-badge badge-danger">108 / 102</span>
+                                </div>
+                                <div class="list-item">
+                                    <div>
+                                        <h4 style="font-weight: 600;" data-translate="hotline-police-title">Police
+                                            Control Room</h4>
+                                        <p style="font-size: 12px; color: var(--text-secondary);"
+                                            data-translate="hotline-police-desc">Local police and safety concerns</p>
+                                    </div>
+                                    <span class="item-badge badge-danger">100</span>
+                                </div>
+                                <div class="list-item">
+                                    <div>
+                                        <h4 style="font-weight: 600;" data-translate="hotline-women-title">Women
+                                            Helpline</h4>
+                                        <p style="font-size: 12px; color: var(--text-secondary);"
+                                            data-translate="hotline-women-desc">Safety and emergency services for women
+                                        </p>
+                                    </div>
+                                    <span class="item-badge badge-danger">1091</span>
+                                </div>
+                                <div class="list-item">
+                                    <div>
+                                        <h4 style="font-weight: 600;" data-translate="hotline-child-title">Child
+                                            Helpline</h4>
+                                        <p style="font-size: 12px; color: var(--text-secondary);"
+                                            data-translate="hotline-child-desc">Emergency support for children in
+                                            distress</p>
+                                    </div>
+                                    <span class="item-badge badge-danger">1098</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- VIEW: Shelters -->
+            <section id="shelters" class="view-section">
+                <div class="section-header">
+                    <div>
+                        <h1 class="section-title" data-translate="shelter-title">Emergency Shelters</h1>
+                        <p class="section-subtitle" data-translate="shelter-subtitle">Locate active relief camps, check
+                            food/supply availability, and review safety metrics.</p>
+                    </div>
+                </div>
+
+                <div class="grid-main">
+                    <!-- Left: Shelter Catalog -->
+                    <div class="glass-card" style="display: flex; flex-direction: column; gap: 16px;">
+                        <div style="display: flex; gap: 12px;">
+                            <input type="text" id="shelterSearch" class="form-input"
+                                data-translate-placeholder="ph-shelter-search" style="flex-grow: 1;">
+                            <select id="shelterFilter" class="form-select" style="max-width: 180px;">
+                                <option value="all" data-translate="opt-all-shelters">All Shelters</option>
+                                <option value="open" data-translate="opt-open-shelters">Available (Open)</option>
+                                <option value="full" data-translate="opt-full-shelters">Nearly Full</option>
+                                <option value="medical" data-translate="opt-medical-shelters">Has Medical Aid</option>
+                            </select>
+                        </div>
+                        <div class="card-list" id="sheltersList" style="max-height: 480px;">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Right: Add a shelter campaign (Volunteer form) -->
+                    <div class="glass-card tricolor-card">
+                        <h3 style="font-family: 'Outfit', sans-serif; margin-bottom: 16px;"
+                            data-translate="form-shelter-title">Register / Update Shelter</h3>
+                        <p style="font-size: 12px; color: var(--text-secondary); margin-bottom: 16px;"
+                            data-translate="form-shelter-desc">
+                            Are you managing a community center or school? Register it as a shelter or update its
+                            capacity.
+                        </p>
+                        <form id="shelterForm">
+                            <div class="form-group">
+                                <label class="form-label" data-translate="lbl-shelter-name">Shelter Name</label>
+                                <input type="text" id="formShelterName" class="form-input"
+                                    data-translate-placeholder="ph-shelter-name" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" data-translate="lbl-shelter-capacity">Total Capacity
+                                    (People)</label>
+                                <input type="number" id="formShelterCapacity" class="form-input"
+                                    data-translate-placeholder="ph-shelter-capacity" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" data-translate="lbl-facilities">Facilities Available</label>
+                                <div style="display: flex; flex-direction: column; gap: 8px; font-size: 13px;">
+                                    <label><input type="checkbox" id="facilityMedical"> <span
+                                            data-translate="fac-medical">Medical Station Available</span></label>
+                                    <label><input type="checkbox" id="facilityFood"> <span
+                                            data-translate="fac-food">Food & Clean Water Provided</span></label>
+                                    <label><input type="checkbox" id="facilityPets"> <span
+                                            data-translate="fac-pets">Pets Allowed</span></label>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn-primary" style="width: 100%;"
+                                data-translate="btn-register-shelter">Register Shelter</button>
+                        </form>
+                    </div>
+                </div>
+            </section>
+
+            <!-- VIEW: Safe Roads -->
+            <section id="roads" class="view-section">
+                <div class="section-header">
+                    <div>
+                        <h1 class="section-title" data-translate="roads-title">Road Safety & Routing</h1>
+                        <p class="section-subtitle" data-translate="roads-subtitle">Real-time reports on road structural
+                            safety, flood levels, and landslide blockages.</p>
+                    </div>
+                </div>
+
+                <div class="grid-main">
+                    <!-- Left: Road Conditions List -->
+                    <div class="glass-card" style="display: flex; flex-direction: column; gap: 16px;">
+                        <div style="display: flex; gap: 12px;">
+                            <input type="text" id="roadSearch" class="form-input"
+                                data-translate-placeholder="ph-road-search" style="flex-grow: 1;">
+                            <select id="roadFilter" class="form-select" style="max-width: 180px;">
+                                <option value="all" data-translate="opt-all-roads">All Conditions</option>
+                                <option value="safe" data-translate="opt-safe-roads">Safe Routes Only</option>
+                                <option value="hazard" data-translate="opt-hazard-roads">Hazards/Blocked Only</option>
+                            </select>
+                        </div>
+                        <div class="card-list" id="roadsList" style="max-height: 480px;">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Right: Report Road Blockage -->
+                    <div class="glass-card tricolor-card">
+                        <h3 style="font-family: 'Outfit', sans-serif; margin-bottom: 16px;"
+                            data-translate="form-road-title">Report a Road Hazard</h3>
+                        <p style="font-size: 12px; color: var(--text-secondary); margin-bottom: 16px;"
+                            data-translate="form-road-desc">
+                            Help rescue teams and drivers by documenting active waterlogging, structure debris, or
+                            fallen lines.
+                        </p>
+                        <form id="roadForm">
+                            <div class="form-group">
+                                <label class="form-label" data-translate="lbl-road-name">Route / Road Name</label>
+                                <input type="text" id="formRoadName" class="form-input"
+                                    data-translate-placeholder="ph-road-name" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" data-translate="lbl-road-status">Condition Status</label>
+                                <select id="formRoadStatus" class="form-select">
+                                    <option value="safe" data-translate="opt-status-safe">Safe to Drive</option>
+                                    <option value="flooded" data-translate="opt-status-flooded">Flooded / Waterlogged
+                                    </option>
+                                    <option value="blocked" data-translate="opt-status-blocked">Blocked / Debris
+                                    </option>
+                                    <option value="landslide" data-translate="opt-status-landslide">Landslide / Sinkhole
+                                    </option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" data-translate="lbl-road-desc">Additional Detail</label>
+                                <textarea id="formRoadDesc" class="form-textarea"
+                                    data-translate-placeholder="ph-road-desc" rows="3"></textarea>
+                            </div>
+                            <button type="submit" class="btn-primary" style="width: 100%;"
+                                data-translate="btn-submit-report">Submit Report</button>
+                        </form>
+                    </div>
+                </div>
+            </section>
+
+            <!-- VIEW: Family Safety Check-In -->
+            <section id="family" class="view-section">
+                <div class="section-header">
+                    <div>
+                        <h1 class="section-title" data-translate="family-title">Family Safety Check-In</h1>
+                        <p class="section-subtitle" data-translate="family-subtitle">Update your health status or search
+                            for registered family members in the safe zones.</p>
+                    </div>
+                </div>
+
+                <div class="grid-main">
+                    <!-- Left: Search Registry -->
+                    <div class="glass-card" style="display: flex; flex-direction: column; gap: 16px;">
+                        <h3 style="font-family: 'Outfit', sans-serif;" data-translate="family-search-title">Search
+                            Check-In Database</h3>
+                        <div style="display: flex; gap: 12px;">
+                            <input type="text" id="familySearch" class="form-input"
+                                data-translate-placeholder="ph-family-search" style="flex-grow: 1;">
+                        </div>
+                        <div class="card-list" id="familyList" style="max-height: 400px;">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Right: Check-In Form -->
+                    <div class="glass-card tricolor-card">
+                        <h3 style="font-family: 'Outfit', sans-serif; margin-bottom: 16px;"
+                            data-translate="form-family-title">Report Your Safety Status</h3>
+                        <p style="font-size: 12px; color: var(--text-secondary); margin-bottom: 16px;"
+                            data-translate="form-family-desc">
+                            Mark yourself safe to let family, friends, and rescue officials know you are okay.
+                        </p>
+                        <form id="familyForm">
+                            <div class="form-group">
+                                <label class="form-label" data-translate="lbl-family-name">Full Name</label>
+                                <input type="text" id="formFamilyName" class="form-input"
+                                    data-translate-placeholder="ph-family-name" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" data-translate="lbl-family-phone">Phone Number</label>
+                                <input type="tel" id="formFamilyPhone" class="form-input"
+                                    data-translate-placeholder="ph-family-phone" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" data-translate="lbl-family-status">Current Status</label>
+                                <select id="formFamilyStatus" class="form-select">
+                                    <option value="Safe" data-translate="opt-fam-safe">Safe & Healthy</option>
+                                    <option value="In Shelter" data-translate="opt-fam-shelter">Relocated to Shelter
+                                    </option>
+                                    <option value="Injured" data-translate="opt-fam-injured">Injured (Needs medical aid)
+                                    </option>
+                                    <option value="Stuck" data-translate="opt-fam-stuck">Stuck (Needs rescue evacuation)
+                                    </option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" data-translate="lbl-family-loc">Current Location /
+                                    Shelter</label>
+                                <input type="text" id="formFamilyLoc" class="form-input"
+                                    data-translate-placeholder="ph-family-loc" required>
+                            </div>
+                            <button type="submit" class="btn-primary" style="width: 100%;"
+                                data-translate="btn-publish-checkin">Publish Check-in</button>
+                        </form>
+                    </div>
+                </div>
+            </section>
+
+            <!-- VIEW: Medical Help -->
+            <section id="medical" class="view-section">
+                <div class="section-header">
+                    <div>
+                        <h1 class="section-title" data-translate="medical-title">Medical Help Directory</h1>
+                        <p class="section-subtitle" data-translate="medical-subtitle">Find hospitals, clinics, emergency
+                            triage facilities, and response teams.</p>
+                    </div>
+                </div>
+
+                <div class="grid-main">
+                    <!-- Medical Hubs list -->
+                    <div class="glass-card" style="display: flex; flex-direction: column; gap: 16px;">
+                        <h3 style="font-family: 'Outfit', sans-serif;" data-translate="medical-list-title">Active
+                            Medical Centers</h3>
+                        <div class="card-list" id="medicalList" style="max-height: 480px;">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Medical Dispatch advice -->
+                    <div style="display: flex; flex-direction: column; gap: 24px;">
+                        <div class="glass-card tricolor-card">
+                            <h3 style="font-family: 'Outfit', sans-serif; margin-bottom: 12px;"
+                                data-translate="firstaid-title">First Aid Fast-Cards</h3>
+                            <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 16px;"
+                                data-translate="firstaid-desc">
+                                Immediate guides for trauma, bleeding, and shock. Click any to ask the chatbot
+                                assistant.
+                            </p>
+                            <div style="display: flex; flex-direction: column; gap: 10px;">
+                                <button class="distress-btn triage-card" data-topic="Severe Bleeding Guide"
+                                    style="text-align: left; justify-content: flex-start;"
+                                    data-translate="card-bleeding">
+                                    🩸 Severe Bleeding Triage
+                                </button>
+                                <button class="distress-btn triage-card" data-topic="Heat Stroke Treatment"
+                                    style="text-align: left; justify-content: flex-start;" data-translate="card-heat">
+                                    ☀️ Heat stroke / Dehydration
+                                </button>
+                                <button class="distress-btn triage-card" data-topic="Fracture splinting"
+                                    style="text-align: left; justify-content: flex-start;"
+                                    data-translate="card-fracture">
+                                    🦴 Bone Fracture/Splinting
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- VIEW: Supply Requests -->
+            <section id="supplies" class="view-section">
+                <div class="section-header">
+                    <div>
+                        <h1 class="section-title" data-translate="supplies-title">Supply Coordination Hub</h1>
+                        <p class="section-subtitle" data-translate="supplies-subtitle">Coordinate life-saving resources
+                            (water, dry food, baby supplies, clean sheets).</p>
+                    </div>
+                </div>
+
+                <div class="grid-main">
+                    <!-- Supply Request catalog -->
+                    <div class="glass-card" style="display: flex; flex-direction: column; gap: 16px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; gap: 16px;">
+                            <h3 style="font-family: 'Outfit', sans-serif;" data-translate="supplies-list-title">Resource
+                                Requests</h3>
+                            <!-- Download offline config button -->
+                            <button id="downloadOfflineBtn" class="distress-btn"
+                                style="padding: 6px 12px; font-size: 12px; max-width: 180px;"
+                                data-translate="btn-download-offline">
+                                📥 Save Offline Guide
+                            </button>
+                        </div>
+                        <div class="card-list" id="suppliesList" style="max-height: 480px;">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Submit resource request form -->
+                    <div class="glass-card tricolor-card">
+                        <h3 style="font-family: 'Outfit', sans-serif; margin-bottom: 16px;"
+                            data-translate="form-supply-title">Request Supplies</h3>
+                        <p style="font-size: 12px; color: var(--text-secondary); margin-bottom: 16px;"
+                            data-translate="form-supply-desc">
+                            Are you or your local center running low on critical food, baby formula, sanitation packs,
+                            or blankets? Post here.
+                        </p>
+                        <form id="supplyForm">
+                            <div class="form-group">
+                                <label class="form-label" data-translate="lbl-supply-item">Supply Item Needed</label>
+                                <input type="text" id="formSupplyItem" class="form-input"
+                                    data-translate-placeholder="ph-supply-item" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" data-translate="lbl-supply-qty">Quantity</label>
+                                <input type="text" id="formSupplyQty" class="form-input"
+                                    data-translate-placeholder="ph-supply-qty" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" data-translate="lbl-supply-contact">Contact Person</label>
+                                <input type="text" id="formSupplyContact" class="form-input"
+                                    data-translate-placeholder="ph-supply-contact" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" data-translate="lbl-supply-loc">Delivery Location</label>
+                                <input type="text" id="formSupplyLoc" class="form-input"
+                                    data-translate-placeholder="ph-supply-loc" required>
+                            </div>
+                            <button type="submit" class="btn-primary" style="width: 100%;"
+                                data-translate="btn-submit-supply">Submit Request</button>
+                        </form>
+                    </div>
+                </div>
+            </section>
+
+            <!-- VIEW: AI Chatbot Assistant -->
+            <section id="chatbot" class="view-section">
+                <div class="section-header">
+                    <div>
+                        <h1 class="section-title" data-translate="chatbot-title">LifeBridge India AI Emergency Advisor
+                        </h1>
+                        <p class="section-subtitle" data-translate="chatbot-subtitle">Ask questions about medical aid,
+                            flood evacuations, or disaster protocols.</p>
+                    </div>
+                </div>
+
+                <div class="glass-card chat-container tricolor-card">
+                    <div class="quick-guide-panel">
+                        <span class="quick-guide-tag" data-query="cpr" data-translate="tag-cpr">How to perform
+                            CPR?</span>
+                        <span class="quick-guide-tag" data-query="earthquake" data-translate="tag-quake">Earthquake
+                            safety protocol</span>
+                        <span class="quick-guide-tag" data-query="flood" data-translate="tag-flood">Flood water safety
+                            guidelines</span>
+                        <span class="quick-guide-tag" data-query="supplies" data-translate="tag-supplies">What items
+                            should be in an emergency kit?</span>
+                    </div>
+
+                    <div class="chat-history" id="chatHistory">
+                        <div class="chat-bubble bot" id="chatFirstBubble">
+                            Hello! I am your LifeBridge AI Assistant. I can guide you through disaster protocols,
+                            first-aid steps, and shelter coordination. How can I help you today?
+                        </div>
+                    </div>
+
+                    <form id="chatForm" class="chat-input-row">
+                        <input type="text" id="chatInput" class="form-input" data-translate-placeholder="ph-chat-input"
+                            style="flex-grow: 1;">
+                        <button type="submit" class="btn-primary" data-translate="btn-chat-send">Send</button>
+                    </form>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+
+</html>
